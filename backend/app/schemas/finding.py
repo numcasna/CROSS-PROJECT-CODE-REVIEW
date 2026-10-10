@@ -34,3 +34,11 @@ class FindingResponse(BaseModel):
     created_at: datetime
     updated_at: datetime
     deleted_at: Optional[datetime] = None
+
+class FindingListResponse(BaseModel):
+    items: list[FindingResponse]
+    total: int
+    page: int
+    page_size: int
+    pages: int
+

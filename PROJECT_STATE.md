@@ -21,8 +21,8 @@
 | **REQ-05** | Project CRUD & Soft Delete | `/api/projects`, `/api/projects/{id}` | Phase 3 | [Approved] | `test_projects.py` | 2026-10-11 |
 | **REQ-06** | Project Membership & Lead Rules | `/api/projects/{id}/members` | Phase 3 | [Approved] | `test_project_members.py` | 2026-10-11 |
 | **REQ-07** | Manual Repository Management | `/api/projects/{id}/repositories` | Phase 3 | [Approved] | `test_repositories.py` | 2026-10-11 |
-| **REQ-08** | Finding Creation & Yearly Code | `POST /api/findings` (CRF-YYYY-XXXX) | Phase 4 | [Passing] | `test_findings.py` | 2026-10-11 |
-| **REQ-09** | Finding Access & Scoped Queries | `GET /api/findings`, `GET /findings/{id}` | Phase 4 | [Specified] | - | - |
+| **REQ-08** | Finding Creation & Yearly Code | `POST /api/findings` (CRF-YYYY-XXXX) | Phase 4 | [Approved] | `test_findings.py` | 2026-10-11 |
+| **REQ-09** | Finding Access & Scoped Queries | `GET /api/findings`, `GET /findings/{id}` | Phase 4 | [Passing] | `test_finding_queries.py` | 2026-10-11 |
 | **REQ-10** | Work Submission (In Review) | `POST /findings/{id}/submit-for-review` | Phase 5 | [Specified] | - | - |
 | **REQ-11** | Status State Machine Transitions | `PATCH /findings/{id}/status` | Phase 5 | [Specified] | - | - |
 | **REQ-12** | Threaded Feedback & Work History | `/findings/{id}/feedback`, `/work-history` | Phase 6 | [Specified] | - | - |
@@ -33,18 +33,18 @@
 
 ## 2. Active Session Log
 
-- **Active Task:** REQ-08: Finding Creation & Yearly Code (`POST /api/findings`, format `CRF-YYYY-XXXX`).
+- **Active Task:** REQ-09: Finding Access & Scoped Queries (`GET /api/findings`, `GET /api/findings/{id}`, `GET /api/projects/{project_id}/findings`).
 - **Author Rules Confirmed & Implemented:**
-  1. Creation is restricted strictly to Admins (`POST /api/findings`). Developers/Leads receive `403 Forbidden`.
-  2. Assignee Constraint: `assignee_id` must be an active enrolled member of `project_members` for the target project (returns `400 Bad Request` if not).
-  3. Branch Fallback: If `branch_name` is omitted in payload, inherit `repository.branch_name`. If repo has none, store `null`.
-  4. Sequence Generation: Atomic counter in `yearly_finding_counters` via `SELECT FOR UPDATE` generates `CRF-YYYY-XXXX`.
-  5. Initial status set to `Open` and audit entry logged in `finding_status_history`.
+  1. `GET /api/findings`: Paginated envelope (`items`, `total`, `page`, `page_size`, `pages`) with defaults `page=1`, `page_size=20`.
+  2. Developers only see findings from projects they are members of (project-wide membership visibility). Admins see all findings globally.
+  3. Filter support for `project_id`, `repository_id`, `status`, `severity`, `category`, `assignee_id`, and `search` query.
+  4. `GET /api/findings/{id}`: Detailed finding. Accessible to project members and admins. Non-members receive `403 Forbidden`. Non-existent or soft-deleted findings return `404 Not Found`.
+  5. `GET /api/projects/{project_id}/findings`: Returns paginated findings for the project; checks project membership or admin role. Non-members receive `403 Forbidden`.
 - **TDD Verification:**
-  - Red Phase: 8 tests failed as expected before implementation.
-  - Green Phase: 10 tests passed in `backend/tests/test_findings.py`.
-  - Regression Suite: All 68 tests across the entire project pass.
-- **Status:** Pending User Approval for REQ-08.
+  - Red Phase: 7 tests failed as expected before implementation.
+  - Green Phase: 8 tests passed in `backend/tests/test_finding_queries.py`.
+  - Regression Suite: All 76 tests across the entire project pass.
+- **Status:** Pending User Approval for REQ-09.
 
 
 

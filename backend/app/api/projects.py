@@ -8,6 +8,8 @@ from backend.app.api.deps import get_current_user, get_db
 from backend.app.models.project import Project, ProjectMember
 from backend.app.models.repository import Repository
 from backend.app.models.user import User
+from backend.app.models.finding import Finding
+from backend.app.schemas.finding import FindingListResponse, FindingResponse
 from backend.app.schemas.project import (
     ProjectCreate,
     ProjectMemberAdd,
@@ -420,5 +422,54 @@ def register_project_repository(
     db.commit()
     db.refresh(new_repo)
     return RepositoryResponse.model_validate(new_repo)
+
+
+@router.get("/{project_id}/findings", response_model=FindingListResponse)
+def list_project_findings(
+    project_id: uuid.UUID,
+    page: int = Query(1, ge=1, description="Page number"),
+    page_size: int = Query(20, ge=1, le=100, description="Page size"),
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """
+    List findings scoped to a project.
+    - Accessible to admins and enrolled project members.
+    - Non-members receive 403 Forbidden.
+    """
+    project = db.query(Project).filter(Project.id == project_id, Project.deleted_at.is_(None)).first()
+    if not project:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Project not found")
+
+    if current_user.role != "admin":
+        is_member = (
+            db.query(ProjectMember)
+            .filter(ProjectMember.project_id == project_id, ProjectMember.user_id == current_user.id)
+            .first()
+        )
+        if not is_member:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Access denied to this project",
+            )
+
+    query = db.query(Finding).filter(Finding.project_id == project_id, Finding.deleted_at.is_(None))
+    total = query.count()
+    pages = (total + page_size - 1) // page_size if total > 0 else 0
+    items = (
+        query.order_by(Finding.created_at.desc())
+        .offset((page - 1) * page_size)
+        .limit(page_size)
+        .all()
+    )
+
+    return FindingListResponse(
+        items=[FindingResponse.model_validate(f) for f in items],
+        total=total,
+        page=page,
+        page_size=page_size,
+        pages=pages,
+    )
+
 
 
