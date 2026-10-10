@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 
 from backend.app.api.deps import get_current_user, get_db
 from backend.app.models.project import Project, ProjectMember
+from backend.app.models.repository import Repository
 from backend.app.models.user import User
 from backend.app.schemas.project import (
     ProjectCreate,
@@ -14,6 +15,7 @@ from backend.app.schemas.project import (
     ProjectResponse,
     ProjectUpdate,
 )
+from backend.app.schemas.repository import RepositoryCreate, RepositoryResponse
 
 router = APIRouter(prefix="/api/projects", tags=["projects"])
 
@@ -328,4 +330,95 @@ def remove_project_member(
     db.delete(membership)
     db.commit()
     return None
+
+
+@router.get("/{project_id}/repositories", response_model=List[RepositoryResponse])
+def list_project_repositories(
+    project_id: uuid.UUID,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """
+    List repositories of a project.
+    Accessible to admins and project members.
+    """
+    project = db.query(Project).filter(Project.id == project_id, Project.deleted_at.is_(None)).first()
+    if not project:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Project not found")
+
+    if current_user.role != "admin":
+        is_member = (
+            db.query(ProjectMember)
+            .filter(ProjectMember.project_id == project_id, ProjectMember.user_id == current_user.id)
+            .first()
+        )
+        if not is_member:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Access denied to this project",
+            )
+
+    repos = (
+        db.query(Repository)
+        .filter(Repository.project_id == project_id)
+        .order_by(Repository.created_at.asc())
+        .all()
+    )
+    return [RepositoryResponse.model_validate(r) for r in repos]
+
+
+@router.post("/{project_id}/repositories", response_model=RepositoryResponse, status_code=status.HTTP_201_CREATED)
+def register_project_repository(
+    project_id: uuid.UUID,
+    repo_in: RepositoryCreate,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """
+    Register a new repository record.
+    Only the Project Lead is authorized to register repositories (403 Forbidden for non-leads and admins).
+    Repository names must be unique within the same project (409 Conflict on duplicate).
+    """
+    if not repo_in.name or not repo_in.name.strip():
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Repository name is required",
+        )
+
+    project = db.query(Project).filter(Project.id == project_id, Project.deleted_at.is_(None)).first()
+    if not project:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Project not found")
+
+    if project.project_lead_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only the Project Lead can register repositories",
+        )
+
+    clean_name = repo_in.name.strip()
+    existing_repo = (
+        db.query(Repository)
+        .filter(Repository.project_id == project_id, Repository.name == clean_name)
+        .first()
+    )
+    if existing_repo:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Repository name already exists in this project",
+        )
+
+    new_repo = Repository(
+        id=uuid.uuid4(),
+        project_id=project_id,
+        name=clean_name,
+        repository_url=repo_in.repository_url.strip() if repo_in.repository_url else None,
+        branch_name=repo_in.branch_name.strip() if repo_in.branch_name else None,
+        technology=repo_in.technology.strip() if repo_in.technology else None,
+        is_active=True,
+    )
+    db.add(new_repo)
+    db.commit()
+    db.refresh(new_repo)
+    return RepositoryResponse.model_validate(new_repo)
+
 

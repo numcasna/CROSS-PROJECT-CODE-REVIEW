@@ -19,8 +19,8 @@
 | **REQ-03** | Auth: Login & JWT Tokens | `POST /api/auth/login`, `GET /api/auth/me` | Phase 2 | [Approved] | `test_auth.py` | 2026-10-11 |
 | **REQ-04** | User Management (Admin Only) | `POST /api/users`, `GET /api/users` | Phase 2 | [Approved] | `test_users.py` | 2026-10-11 |
 | **REQ-05** | Project CRUD & Soft Delete | `/api/projects`, `/api/projects/{id}` | Phase 3 | [Approved] | `test_projects.py` | 2026-10-11 |
-| **REQ-06** | Project Membership & Lead Rules | `/api/projects/{id}/members` | Phase 3 | [Passing] | `test_project_members.py` | 2026-10-11 |
-| **REQ-07** | Manual Repository Management | `/api/projects/{id}/repositories` | Phase 3 | [Specified] | - | - |
+| **REQ-06** | Project Membership & Lead Rules | `/api/projects/{id}/members` | Phase 3 | [Approved] | `test_project_members.py` | 2026-10-11 |
+| **REQ-07** | Manual Repository Management | `/api/projects/{id}/repositories` | Phase 3 | [Passing] | `test_repositories.py` | 2026-10-11 |
 | **REQ-08** | Finding Creation & Yearly Code | `POST /api/findings` (CRF-YYYY-XXXX) | Phase 4 | [Specified] | - | - |
 | **REQ-09** | Finding Access & Scoped Queries | `GET /api/findings`, `GET /findings/{id}` | Phase 4 | [Specified] | - | - |
 | **REQ-10** | Work Submission (In Review) | `POST /findings/{id}/submit-for-review` | Phase 5 | [Specified] | - | - |
@@ -33,17 +33,18 @@
 
 ## 2. Active Session Log
 
-- **Active Task:** REQ-06: Project Membership & Lead Rules (`/api/projects/{id}/members`).
+- **Active Task:** REQ-07: Manual Repository Management (`/api/projects/{id}/repositories`).
 - **Author Rules Confirmed & Implemented:**
-  1. Only the Project Lead can add (`POST /api/projects/{id}/members`) or remove (`DELETE /api/projects/{id}/members/{user_id}`) members.
-  2. Non-lead members receive `403 Forbidden` if attempting to add or remove members.
-  3. The Project Lead cannot be removed from `project_members` (must return `400 Bad Request`).
-  4. Project members and admins can list members (`GET /api/projects/{id}/members`).
+  1. Only the Project Lead can register new repositories (`POST /api/projects/{id}/repositories`).
+  2. Regular project members and non-members receive `403 Forbidden` if attempting to add repositories.
+  3. All project members and global admins can view repositories (`GET /api/projects/{id}/repositories`). Non-members receive `403 Forbidden`.
+  4. Repository name must be unique within the same `project_id`. Duplicates return `409 Conflict`.
+  5. Operations on non-existent or soft-deleted projects return `404 Not Found`.
 - **TDD Verification:**
-  - Red Phase: 12 tests failed as expected before implementation.
-  - Green Phase: 13 tests passed in `backend/tests/test_project_members.py`.
-  - Regression Suite: All 48 tests across the entire project pass.
-- **Status:** Pending User Approval for REQ-06.
+  - Red Phase: 9 tests failed as expected before implementation.
+  - Green Phase: 10 tests passed in `backend/tests/test_repositories.py`.
+  - Regression Suite: All 58 tests across the entire project pass.
+- **Status:** Pending User Approval for REQ-07.
 
 
 
