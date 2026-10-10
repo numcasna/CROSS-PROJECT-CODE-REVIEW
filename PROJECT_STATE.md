@@ -15,8 +15,8 @@
 | Req ID | Requirement Description | Target Module / Endpoints | Phase | Status | Red-Phase Test | Verification Date |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 | **REQ-01** | Database Engine & Migrations | `backend/app/models/*`, Alembic env | Phase 1 | [Approved] | `test_database_schema.py` | 2026-10-11 |
-| **REQ-02** | Initial Admin Provisioning | `backend/scripts/seed_admin.py` | Phase 1 | [Passing] | `test_seed_admin.py` | 2026-10-11 |
-| **REQ-03** | Auth: Login & JWT Tokens | `POST /api/auth/login`, `GET /api/auth/me` | Phase 2 | [Specified] | - | - |
+| **REQ-02** | Initial Admin Provisioning | `backend/scripts/seed_admin.py` | Phase 1 | [Approved] | `test_seed_admin.py` | 2026-10-11 |
+| **REQ-03** | Auth: Login & JWT Tokens | `POST /api/auth/login`, `GET /api/auth/me` | Phase 2 | [Passing] | `test_auth.py` | 2026-10-11 |
 | **REQ-04** | User Management (Admin Only) | `POST /api/users`, `GET /api/users` | Phase 2 | [Specified] | - | - |
 | **REQ-05** | Project CRUD & Soft Delete | `/api/projects`, `/api/projects/{id}` | Phase 3 | [Specified] | - | - |
 | **REQ-06** | Project Membership & Lead Rules | `/api/projects/{id}/members` | Phase 3 | [Specified] | - | - |
@@ -33,11 +33,13 @@
 
 ## 2. Active Session Log
 
-- **Active Task:** REQ-02: Initial Admin Provisioning (`backend/scripts/seed_admin.py`).
-- **Red Phase Verification:** `backend/tests/test_seed_admin.py` failed with `NotImplementedError: seed_admin is not implemented yet` across 4 test cases.
-- **Green Phase Verification:** Implemented `backend/app/core/security.py` (Argon2id hasher) and `backend/scripts/seed_admin.py` (CLI flags, env vars, interactive fallback). All 4 tests passed, and full regression sweep (9 tests) passed cleanly in 5.09s.
-- **Phase 1 Gate Status:** Both REQ-01 [Approved] and REQ-02 [Passing] complete Phase 1 Foundation & DB Schemas.
-- **Next Task:** Phase 2 Kickoff — REQ-03: Auth Engine (Login & JWT Tokens: `POST /api/auth/login`, `GET /api/auth/me`).
+- **Active Task:** REQ-03: Auth Engine (Login, Logout, & JWT Current User: `POST /api/auth/login`, `GET /api/auth/me`).
+- **Red Phase Verification:** `backend/tests/test_auth.py` failed with 404/KeyError across 8 test cases.
+- **Green Phase Verification:** Implemented JWT token generation/decoding in `backend/app/core/security.py`, auth dependencies in `backend/app/api/deps.py`, and endpoints in `backend/app/api/auth.py`. All 8 tests passed in 7.77s; full regression sweep (17 tests) passed in 10.99s.
+- **Status Gate:** `REQ-03` is [Passing]. Ready for Author Review and transition to `REQ-04`.
+- **Next Task:** REQ-04 (User Management - Admin Only: `POST /api/users`, `GET /api/users`).
+
+
 
 
 
