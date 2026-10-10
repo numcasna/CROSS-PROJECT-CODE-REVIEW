@@ -20,8 +20,8 @@
 | **REQ-04** | User Management (Admin Only) | `POST /api/users`, `GET /api/users` | Phase 2 | [Approved] | `test_users.py` | 2026-10-11 |
 | **REQ-05** | Project CRUD & Soft Delete | `/api/projects`, `/api/projects/{id}` | Phase 3 | [Approved] | `test_projects.py` | 2026-10-11 |
 | **REQ-06** | Project Membership & Lead Rules | `/api/projects/{id}/members` | Phase 3 | [Approved] | `test_project_members.py` | 2026-10-11 |
-| **REQ-07** | Manual Repository Management | `/api/projects/{id}/repositories` | Phase 3 | [Passing] | `test_repositories.py` | 2026-10-11 |
-| **REQ-08** | Finding Creation & Yearly Code | `POST /api/findings` (CRF-YYYY-XXXX) | Phase 4 | [Specified] | - | - |
+| **REQ-07** | Manual Repository Management | `/api/projects/{id}/repositories` | Phase 3 | [Approved] | `test_repositories.py` | 2026-10-11 |
+| **REQ-08** | Finding Creation & Yearly Code | `POST /api/findings` (CRF-YYYY-XXXX) | Phase 4 | [Passing] | `test_findings.py` | 2026-10-11 |
 | **REQ-09** | Finding Access & Scoped Queries | `GET /api/findings`, `GET /findings/{id}` | Phase 4 | [Specified] | - | - |
 | **REQ-10** | Work Submission (In Review) | `POST /findings/{id}/submit-for-review` | Phase 5 | [Specified] | - | - |
 | **REQ-11** | Status State Machine Transitions | `PATCH /findings/{id}/status` | Phase 5 | [Specified] | - | - |
@@ -33,18 +33,18 @@
 
 ## 2. Active Session Log
 
-- **Active Task:** REQ-07: Manual Repository Management (`/api/projects/{id}/repositories`).
+- **Active Task:** REQ-08: Finding Creation & Yearly Code (`POST /api/findings`, format `CRF-YYYY-XXXX`).
 - **Author Rules Confirmed & Implemented:**
-  1. Only the Project Lead can register new repositories (`POST /api/projects/{id}/repositories`).
-  2. Regular project members and non-members receive `403 Forbidden` if attempting to add repositories.
-  3. All project members and global admins can view repositories (`GET /api/projects/{id}/repositories`). Non-members receive `403 Forbidden`.
-  4. Repository name must be unique within the same `project_id`. Duplicates return `409 Conflict`.
-  5. Operations on non-existent or soft-deleted projects return `404 Not Found`.
+  1. Creation is restricted strictly to Admins (`POST /api/findings`). Developers/Leads receive `403 Forbidden`.
+  2. Assignee Constraint: `assignee_id` must be an active enrolled member of `project_members` for the target project (returns `400 Bad Request` if not).
+  3. Branch Fallback: If `branch_name` is omitted in payload, inherit `repository.branch_name`. If repo has none, store `null`.
+  4. Sequence Generation: Atomic counter in `yearly_finding_counters` via `SELECT FOR UPDATE` generates `CRF-YYYY-XXXX`.
+  5. Initial status set to `Open` and audit entry logged in `finding_status_history`.
 - **TDD Verification:**
-  - Red Phase: 9 tests failed as expected before implementation.
-  - Green Phase: 10 tests passed in `backend/tests/test_repositories.py`.
-  - Regression Suite: All 58 tests across the entire project pass.
-- **Status:** Pending User Approval for REQ-07.
+  - Red Phase: 8 tests failed as expected before implementation.
+  - Green Phase: 10 tests passed in `backend/tests/test_findings.py`.
+  - Regression Suite: All 68 tests across the entire project pass.
+- **Status:** Pending User Approval for REQ-08.
 
 
 
