@@ -36,3 +36,16 @@ class ProjectMember(Base):
     project = relationship("Project", back_populates="members")
     user = relationship("User", foreign_keys=[user_id])
     adder = relationship("User", foreign_keys=[added_by])
+
+    @property
+    def name(self) -> Optional[str]:
+        return self.user.name if self.user else None
+
+    @property
+    def email(self) -> Optional[str]:
+        return self.user.email if self.user else None
+
+    @property
+    def role(self) -> Optional[str]:
+        return self.user.role if self.user else None
+

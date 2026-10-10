@@ -23,6 +23,20 @@ class ProjectMemberItem(BaseModel):
     role: Optional[str] = None
     joined_at: datetime
 
+class ProjectMemberAdd(BaseModel):
+    user_id: uuid.UUID
+
+class ProjectMemberResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    project_id: uuid.UUID
+    user_id: uuid.UUID
+    name: Optional[str] = None
+    email: Optional[str] = None
+    role: Optional[str] = None
+    added_by: uuid.UUID
+    joined_at: datetime
+
 class ProjectResponse(ProjectBase):
     model_config = ConfigDict(from_attributes=True)
 

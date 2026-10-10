@@ -7,7 +7,13 @@ from sqlalchemy.orm import Session
 from backend.app.api.deps import get_current_user, get_db
 from backend.app.models.project import Project, ProjectMember
 from backend.app.models.user import User
-from backend.app.schemas.project import ProjectCreate, ProjectResponse, ProjectUpdate
+from backend.app.schemas.project import (
+    ProjectCreate,
+    ProjectMemberAdd,
+    ProjectMemberResponse,
+    ProjectResponse,
+    ProjectUpdate,
+)
 
 router = APIRouter(prefix="/api/projects", tags=["projects"])
 
@@ -191,3 +197,135 @@ def soft_delete_project(
     project.deleted_at = datetime.now(timezone.utc)
     db.commit()
     return None
+
+
+@router.get("/{project_id}/members", response_model=List[ProjectMemberResponse])
+def list_project_members(
+    project_id: uuid.UUID,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """
+    List members of a project.
+    Accessible to admins and project members.
+    """
+    project = db.query(Project).filter(Project.id == project_id, Project.deleted_at.is_(None)).first()
+    if not project:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Project not found")
+
+    if current_user.role != "admin":
+        is_member = (
+            db.query(ProjectMember)
+            .filter(ProjectMember.project_id == project_id, ProjectMember.user_id == current_user.id)
+            .first()
+        )
+        if not is_member:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Access denied to this project",
+            )
+
+    members = (
+        db.query(ProjectMember)
+        .filter(ProjectMember.project_id == project_id)
+        .order_by(ProjectMember.joined_at.asc())
+        .all()
+    )
+    return [ProjectMemberResponse.model_validate(m) for m in members]
+
+
+@router.post("/{project_id}/members", response_model=ProjectMemberResponse, status_code=status.HTTP_201_CREATED)
+def add_project_member(
+    project_id: uuid.UUID,
+    member_in: ProjectMemberAdd,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """
+    Add a team member to the project.
+    Only the Project Lead is authorized to add members (403 Forbidden for non-leads and admins).
+    """
+    project = db.query(Project).filter(Project.id == project_id, Project.deleted_at.is_(None)).first()
+    if not project:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Project not found")
+
+    if project.project_lead_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only the Project Lead can add members",
+        )
+
+    # Validate target user exists and is active
+    target_user = db.query(User).filter(User.id == member_in.user_id, User.is_active == True).first()
+    if not target_user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User not found",
+        )
+
+    # Check if already a member
+    existing_membership = (
+        db.query(ProjectMember)
+        .filter(ProjectMember.project_id == project_id, ProjectMember.user_id == member_in.user_id)
+        .first()
+    )
+    if existing_membership:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="User is already a member of this project",
+        )
+
+    new_membership = ProjectMember(
+        project_id=project_id,
+        user_id=member_in.user_id,
+        added_by=current_user.id,
+    )
+    db.add(new_membership)
+    db.commit()
+    db.refresh(new_membership)
+    return ProjectMemberResponse.model_validate(new_membership)
+
+
+@router.delete("/{project_id}/members/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
+def remove_project_member(
+    project_id: uuid.UUID,
+    user_id: uuid.UUID,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """
+    Remove a team member from the project.
+    Only the Project Lead is authorized to remove members (403 Forbidden for non-leads and admins).
+    The Project Lead cannot be removed (400 Bad Request).
+    """
+    project = db.query(Project).filter(Project.id == project_id, Project.deleted_at.is_(None)).first()
+    if not project:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Project not found")
+
+    if project.project_lead_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only the Project Lead can remove members",
+        )
+
+    if user_id == project.project_lead_id:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="The Project Lead cannot be removed from project membership",
+        )
+
+    membership = (
+        db.query(ProjectMember)
+        .filter(ProjectMember.project_id == project_id, ProjectMember.user_id == user_id)
+        .first()
+    )
+    if not membership:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User is not a member of this project",
+        )
+
+    db.delete(membership)
+    db.commit()
+    return None
+
