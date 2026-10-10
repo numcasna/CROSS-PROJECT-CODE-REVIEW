@@ -16,8 +16,8 @@
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 | **REQ-01** | Database Engine & Migrations | `backend/app/models/*`, Alembic env | Phase 1 | [Approved] | `test_database_schema.py` | 2026-10-11 |
 | **REQ-02** | Initial Admin Provisioning | `backend/scripts/seed_admin.py` | Phase 1 | [Approved] | `test_seed_admin.py` | 2026-10-11 |
-| **REQ-03** | Auth: Login & JWT Tokens | `POST /api/auth/login`, `GET /api/auth/me` | Phase 2 | [Passing] | `test_auth.py` | 2026-10-11 |
-| **REQ-04** | User Management (Admin Only) | `POST /api/users`, `GET /api/users` | Phase 2 | [Specified] | - | - |
+| **REQ-03** | Auth: Login & JWT Tokens | `POST /api/auth/login`, `GET /api/auth/me` | Phase 2 | [Approved] | `test_auth.py` | 2026-10-11 |
+| **REQ-04** | User Management (Admin Only) | `POST /api/users`, `GET /api/users` | Phase 2 | [Passing] | `test_users.py` | 2026-10-11 |
 | **REQ-05** | Project CRUD & Soft Delete | `/api/projects`, `/api/projects/{id}` | Phase 3 | [Specified] | - | - |
 | **REQ-06** | Project Membership & Lead Rules | `/api/projects/{id}/members` | Phase 3 | [Specified] | - | - |
 | **REQ-07** | Manual Repository Management | `/api/projects/{id}/repositories` | Phase 3 | [Specified] | - | - |
@@ -33,11 +33,13 @@
 
 ## 2. Active Session Log
 
-- **Active Task:** REQ-03: Auth Engine (Login, Logout, & JWT Current User: `POST /api/auth/login`, `GET /api/auth/me`).
-- **Red Phase Verification:** `backend/tests/test_auth.py` failed with 404/KeyError across 8 test cases.
-- **Green Phase Verification:** Implemented JWT token generation/decoding in `backend/app/core/security.py`, auth dependencies in `backend/app/api/deps.py`, and endpoints in `backend/app/api/auth.py`. All 8 tests passed in 7.77s; full regression sweep (17 tests) passed in 10.99s.
-- **Status Gate:** `REQ-03` is [Passing]. Ready for Author Review and transition to `REQ-04`.
-- **Next Task:** REQ-04 (User Management - Admin Only: `POST /api/users`, `GET /api/users`).
+- **Active Task:** REQ-04: User Management (Admin Creation & Listing: `POST /api/users`, `GET /api/users`).
+- **Red Phase Verification:** `backend/tests/test_users.py` failed across all 9 test cases (404 Not Found on unhandled routes).
+- **Green Phase Verification:** Implemented `UserCreate` schema with literal role validation, admin check in `POST /api/users`, conflict check for duplicate emails, and authenticated listing in `GET /api/users` with role/is_active filtering. All 9 tests passed.
+- **Phase 2 Gate Status:** Both REQ-03 [Approved] and REQ-04 [Passing] complete Phase 2 Authentication & Security Engine. Full regression suite (26 tests) passed in 22.86s.
+- **Next Task:** Phase 3 Kickoff — Project & Membership Scoping (REQ-05, REQ-06, REQ-07).
+
+
 
 
 
