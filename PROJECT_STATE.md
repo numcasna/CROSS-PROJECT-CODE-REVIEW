@@ -14,8 +14,8 @@
 
 | Req ID | Requirement Description | Target Module / Endpoints | Phase | Status | Red-Phase Test | Verification Date |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **REQ-01** | Database Engine & Migrations | `backend/app/models/*`, Alembic env | Phase 1 | [Passing] | `test_database_schema.py` | 2026-10-11 |
-| **REQ-02** | Initial Admin Provisioning | `backend/scripts/seed_admin.py` | Phase 1 | [Specified] | Pending | - |
+| **REQ-01** | Database Engine & Migrations | `backend/app/models/*`, Alembic env | Phase 1 | [Approved] | `test_database_schema.py` | 2026-10-11 |
+| **REQ-02** | Initial Admin Provisioning | `backend/scripts/seed_admin.py` | Phase 1 | [Passing] | `test_seed_admin.py` | 2026-10-11 |
 | **REQ-03** | Auth: Login & JWT Tokens | `POST /api/auth/login`, `GET /api/auth/me` | Phase 2 | [Specified] | - | - |
 | **REQ-04** | User Management (Admin Only) | `POST /api/users`, `GET /api/users` | Phase 2 | [Specified] | - | - |
 | **REQ-05** | Project CRUD & Soft Delete | `/api/projects`, `/api/projects/{id}` | Phase 3 | [Specified] | - | - |
@@ -33,10 +33,11 @@
 
 ## 2. Active Session Log
 
-- **Active Task:** REQ-01: Database Engine & Migrations (9 Relational Tables + 1 Concurrency Allocator Table).
-- **Red Phase Verification:** `backend/tests/test_database_schema.py` failed with `AssertionError: Missing required tables in metadata: {'finding_status_history', 'finding_feedback', 'projects', 'finding_work_history', 'findings', 'finding_attachments', 'users', 'project_members', 'yearly_finding_counters', 'repositories'}`.
-- **Green Phase Verification:** Implemented models in `backend/app/models/` matching Section 1.3 schema. All 5 test suites passed in 1.32s.
-- **Alembic Configuration:** Initialized in `backend/alembic` targeting `Base.metadata`.
-- **Status Gate:** REQ-01 is [Passing]. Awaiting Author Review to mark [Approved] or proceed directly to REQ-02.
-- **Next Task:** REQ-02 (Initial Admin Provisioning via `backend/scripts/seed_admin.py` using Argon2id).
+- **Active Task:** REQ-02: Initial Admin Provisioning (`backend/scripts/seed_admin.py`).
+- **Red Phase Verification:** `backend/tests/test_seed_admin.py` failed with `NotImplementedError: seed_admin is not implemented yet` across 4 test cases.
+- **Green Phase Verification:** Implemented `backend/app/core/security.py` (Argon2id hasher) and `backend/scripts/seed_admin.py` (CLI flags, env vars, interactive fallback). All 4 tests passed, and full regression sweep (9 tests) passed cleanly in 5.09s.
+- **Phase 1 Gate Status:** Both REQ-01 [Approved] and REQ-02 [Passing] complete Phase 1 Foundation & DB Schemas.
+- **Next Task:** Phase 2 Kickoff — REQ-03: Auth Engine (Login & JWT Tokens: `POST /api/auth/login`, `GET /api/auth/me`).
+
+
 
