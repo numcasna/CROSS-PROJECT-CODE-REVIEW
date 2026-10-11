@@ -1,4 +1,4 @@
-# Dailoqua · Cross-Project Code Review System (CPCRS)
+# Dailoqa · Cross-Project Code Review System (CPCRS)
 ## 📋 Team Quickstart Guide
 
 ---

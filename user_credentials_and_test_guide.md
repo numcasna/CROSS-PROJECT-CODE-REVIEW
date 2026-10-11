@@ -1,4 +1,4 @@
-# Dailoqua · CPCRS User Credentials & Test Environment Guide
+# Dailoqa · CPCRS User Credentials & Test Environment Guide
 
 **Live Production URL:** [https://cross-project-code-review-system.onrender.com](https://cross-project-code-review-system.onrender.com)  
 **Live API Docs (Swagger):** [https://cpcrs-backend.onrender.com/docs](https://cpcrs-backend.onrender.com/docs)  

@@ -35,10 +35,10 @@ export default function Login() {
         <div className="login-mark">
           <Icon name="findings" size={22} />
         </div>
-        <p className="eyebrow">DAILOQUA · CROSS PROJECT CODE REVIEW</p>
+        <p className="eyebrow">DAILOQA · CROSS PROJECT CODE REVIEW</p>
         <h1>Code review findings, in one workspace.</h1>
         <p className="login-copy">
-          Dailoqua Engineering Portal — Track findings, projects, resolver decisions, and remediation progress across engineering teams.
+          Dailoqa Engineering Portal — Track findings, projects, resolver decisions, and remediation progress across engineering teams.
         </p>
 
         <form onSubmit={submit} className="login-form">
@@ -71,7 +71,7 @@ export default function Login() {
         </form>
 
         <div style={{ marginTop: '1.5rem', paddingTop: '1rem', borderTop: '1px solid #e2e8f0', textAlign: 'center', fontSize: '0.8rem', color: '#64748b' }}>
-          Developed for <strong>Dailoqua</strong> by the Engineering Intern Team
+          Developed for <strong>Dailoqa</strong> by the Engineering Intern Team
         </div>
       </div>
     </div>

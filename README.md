@@ -1,4 +1,4 @@
-# Dailoqua · Cross-Project Code Review System (CPCRS)
+# Dailoqa · Cross-Project Code Review System (CPCRS)
 
 [![FastAPI](https://img.shields.io/badge/Backend-FastAPI-009688.svg?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
 [![Python 3.12](https://img.shields.io/badge/Python-3.12-3776AB.svg?logo=python&logoColor=white)](https://www.python.org)
@@ -8,7 +8,7 @@
 [![SQLAlchemy](https://img.shields.io/badge/ORM-SQLAlchemy%202.0-D71F00.svg)](https://www.sqlalchemy.org)
 [![Tests](https://img.shields.io/badge/Tests-112%20Passing-success.svg)](backend/tests/)
 
-A centralized, role-governed platform engineered for **Dailoqua** (`DAILOQUA`) to capture, assign, triage, and remediate code review findings across disparate software repositories.
+A centralized, role-governed platform engineered for **Dailoqa** (`DAILOQA`) to capture, assign, triage, and remediate code review findings across disparate software repositories.
 
 ---
 
@@ -258,7 +258,7 @@ This repository is deployed and hosted live on [Render](https://render.com):
    - **Environment Variables**:
      - `DATABASE_URL`: `sqlite:///./prod.db`
      - `SECRET_KEY`: `production-super-secret-key-cpcrs-2026-secure-random`
-     - `PROJECT_NAME`: `Dailoqua · Cross-Project Code Review Finding Tracker`
+     - `PROJECT_NAME`: `Dailoqa · Cross-Project Code Review Finding Tracker`
      - `ACCESS_TOKEN_EXPIRE_MINUTES`: `1440`
 
 2. **Frontend Static Site (`cross-project-code-review-system`)**:
@@ -274,7 +274,7 @@ This repository is deployed and hosted live on [Render](https://render.com):
 
 ## 🏢 Organization & Intern Team Acknowledgements
 
-This system was engineered and delivered for **Dailoqua** (`DAILOQUA`) by the Software Engineering Intern Team:
+This system was engineered and delivered for **Dailoqa** (`DAILOQA`) by the Software Engineering Intern Team:
 - **Sachin Jain** — Global Lead Administrator
 - **Saloni Rana** — Project Lead & Developer
 - **Khushi** — Fullstack Developer
@@ -286,4 +286,4 @@ This system was engineered and delivered for **Dailoqua** (`DAILOQUA`) by the So
 
 ## 📄 License
 
-Internal Engineering Project — Developed for **Dailoqua**.
+Internal Engineering Project — Developed for **Dailoqa**.
