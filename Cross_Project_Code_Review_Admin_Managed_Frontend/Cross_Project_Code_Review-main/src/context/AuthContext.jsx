@@ -32,6 +32,9 @@ export function AuthProvider({ children }) {
 
   async function login({ email, password }) {
     const data = await api.login(email, password)
+    if (!data?.user) {
+      throw new Error('Authentication failed: Invalid credentials or server error.')
+    }
     const user = data.user
     const role = user.role === 'developer' ? 'user' : user.role
     const mapped = {

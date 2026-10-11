@@ -1,4 +1,4 @@
-# Cross-Project Code Review Finding Tracker (CPCRS)
+# Dialoka · Cross-Project Code Review System (CPCRS)
 
 [![FastAPI](https://img.shields.io/badge/Backend-FastAPI-009688.svg?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
 [![Python 3.12](https://img.shields.io/badge/Python-3.12-3776AB.svg?logo=python&logoColor=white)](https://www.python.org)
@@ -8,7 +8,7 @@
 [![SQLAlchemy](https://img.shields.io/badge/ORM-SQLAlchemy%202.0-D71F00.svg)](https://www.sqlalchemy.org)
 [![Tests](https://img.shields.io/badge/Tests-112%20Passing-success.svg)](backend/tests/)
 
-A centralized, role-governed platform designed for engineering teams to capture, assign, triage, and remediate code review findings across disparate software repositories.
+A centralized, role-governed platform engineered for **Dialoka** (`DIALOKA`) to capture, assign, triage, and remediate code review findings across disparate software repositories.
 
 ---
 
@@ -245,7 +245,7 @@ This repository is deployed and hosted live on [Render](https://render.com):
 
 | Component | Service Type | Live Production URL | Description |
 | :--- | :--- | :--- | :--- |
-| **Frontend UI** | Static Site | [https://cpcrs-frontend.onrender.com](https://cpcrs-frontend.onrender.com) | React 18 / Vite 5 / Tailwind CSS Single Page Application |
+| **Frontend UI** | Static Site | [https://cross-project-code-review-system.onrender.com](https://cross-project-code-review-system.onrender.com) | React 18 / Vite 5 / Tailwind CSS Single Page Application |
 | **Backend API** | Web Service | [https://cpcrs-backend.onrender.com](https://cpcrs-backend.onrender.com) | FastAPI REST API Service |
 | **Interactive Docs** | OpenAPI | [https://cpcrs-backend.onrender.com/docs](https://cpcrs-backend.onrender.com/docs) | Swagger UI for exploring and testing endpoints |
 
@@ -258,19 +258,32 @@ This repository is deployed and hosted live on [Render](https://render.com):
    - **Environment Variables**:
      - `DATABASE_URL`: `sqlite:///./prod.db`
      - `SECRET_KEY`: `production-super-secret-key-cpcrs-2026-secure-random`
-     - `PROJECT_NAME`: `Cross-Project Code Review Finding Tracker`
+     - `PROJECT_NAME`: `Dialoka · Cross-Project Code Review Finding Tracker`
      - `ACCESS_TOKEN_EXPIRE_MINUTES`: `1440`
 
-2. **Frontend Static Site (`cpcrs-frontend`)**:
+2. **Frontend Static Site (`cross-project-code-review-system`)**:
    - **Build Command**: `cd Cross_Project_Code_Review_Admin_Managed_Frontend/Cross_Project_Code_Review-main && npm install && npm run build`
    - **Publish Directory**: `Cross_Project_Code_Review_Admin_Managed_Frontend/Cross_Project_Code_Review-main/dist`
    - **Environment Variables**:
      - `VITE_API_BASE_URL`: `https://cpcrs-backend.onrender.com`
    - **Routes / Rewrites**:
+     - `/api/*` ➔ `https://cpcrs-backend.onrender.com/api/*` (Reverse proxy for API requests)
      - `/*` ➔ `/index.html` (Rewrite rule for client-side React Router navigation)
+
+---
+
+## 🏢 Organization & Intern Team Acknowledgements
+
+This system was engineered and delivered for **Dialoka** (`DIALOKA`) by the Software Engineering Intern Team:
+- **Sachin Jain** — Global Lead Administrator
+- **Saloni Rana** — Project Lead & Developer
+- **Khushi** — Fullstack Developer
+- **Yash Tanwar** — Project Lead & Developer
+- **Tanmay Garg** — Fullstack Developer
+- **Nitin Aman** — Project Lead & Developer
 
 ---
 
 ## 📄 License
 
-Internal Engineering Project — Distributed under proprietary license for cross-project code review management.
+Internal Engineering Project — Developed for **Dialoka**.

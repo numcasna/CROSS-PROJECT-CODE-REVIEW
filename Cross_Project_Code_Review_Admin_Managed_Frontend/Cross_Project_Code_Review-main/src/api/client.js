@@ -1,6 +1,8 @@
 const API_BASE = import.meta.env.VITE_API_BASE_URL
   ? `${import.meta.env.VITE_API_BASE_URL.replace(/\/$/, '')}/api`
-  : '/api'
+  : (typeof window !== 'undefined' && window.location.hostname.endsWith('onrender.com'))
+    ? 'https://cpcrs-backend.onrender.com/api'
+    : '/api'
 
 function getAuthHeader() {
   const token = localStorage.getItem('cpcrs_token')
@@ -27,9 +29,14 @@ async function request(endpoint, options = {}) {
     return null
   }
 
-  const data = await response.json().catch(() => null)
+  const contentType = response.headers.get('content-type') || ''
+  const isJson = contentType.includes('application/json')
+  const data = isJson ? await response.json().catch(() => null) : null
 
-  if (!response.ok) {
+  if (!response.ok || !data) {
+    if (!isJson && response.ok) {
+      throw new Error('Backend returned non-JSON response. Please verify API endpoint connectivity.')
+    }
     const errorMsg = data?.detail || response.statusText || 'Request failed'
     const error = new Error(typeof errorMsg === 'string' ? errorMsg : JSON.stringify(errorMsg))
     error.status = response.status

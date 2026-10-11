@@ -1,7 +1,8 @@
-# CPCRS User Credentials & Test Environment Guide
+# Dialoka · CPCRS User Credentials & Test Environment Guide
 
-**Web App URL:** [http://localhost:5173](http://localhost:5173)  
-**Interactive API Docs (Swagger):** [http://localhost:8000/docs](http://localhost:8000/docs)  
+**Live Production URL:** [https://cross-project-code-review-system.onrender.com](https://cross-project-code-review-system.onrender.com)  
+**Live API Docs (Swagger):** [https://cpcrs-backend.onrender.com/docs](https://cpcrs-backend.onrender.com/docs)  
+**Local Web App URL:** [http://localhost:5173](http://localhost:5173)  
 **Common Password Pattern:** `<username>123` (lowercase first name + `123`)
 
 ---

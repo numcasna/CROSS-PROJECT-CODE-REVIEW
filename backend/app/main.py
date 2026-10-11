@@ -34,6 +34,7 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
+        "https://cross-project-code-review-system.onrender.com",
         "https://cpcrs-frontend.onrender.com",
         "http://localhost:5173",
         "http://127.0.0.1:5173",
