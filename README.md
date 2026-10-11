@@ -241,15 +241,33 @@ PYTHONPATH=. python backend/scripts/demo_walkthrough.py
 
 ## ☁️ Cloud Deployment (Render)
 
-This repository is optimized for deployment on [Render](https://render.com):
+This repository is deployed and hosted live on [Render](https://render.com):
 
-1. **Backend Web Service**:
+| Component | Service Type | Live Production URL | Description |
+| :--- | :--- | :--- | :--- |
+| **Frontend UI** | Static Site | [https://cpcrs-frontend.onrender.com](https://cpcrs-frontend.onrender.com) | React 18 / Vite 5 / Tailwind CSS Single Page Application |
+| **Backend API** | Web Service | [https://cpcrs-backend.onrender.com](https://cpcrs-backend.onrender.com) | FastAPI REST API Service |
+| **Interactive Docs** | OpenAPI | [https://cpcrs-backend.onrender.com/docs](https://cpcrs-backend.onrender.com/docs) | Swagger UI for exploring and testing endpoints |
+
+### Render Service Specifications
+
+1. **Backend Web Service (`cpcrs-backend`)**:
    - **Environment**: Python 3
    - **Build Command**: `pip install -r backend/requirements.txt`
    - **Start Command**: `uvicorn backend.app.main:app --host 0.0.0.0 --port $PORT`
-2. **Frontend Static Site**:
+   - **Environment Variables**:
+     - `DATABASE_URL`: `sqlite:///./prod.db`
+     - `SECRET_KEY`: `production-super-secret-key-cpcrs-2026-secure-random`
+     - `PROJECT_NAME`: `Cross-Project Code Review Finding Tracker`
+     - `ACCESS_TOKEN_EXPIRE_MINUTES`: `1440`
+
+2. **Frontend Static Site (`cpcrs-frontend`)**:
    - **Build Command**: `cd Cross_Project_Code_Review_Admin_Managed_Frontend/Cross_Project_Code_Review-main && npm install && npm run build`
    - **Publish Directory**: `Cross_Project_Code_Review_Admin_Managed_Frontend/Cross_Project_Code_Review-main/dist`
+   - **Environment Variables**:
+     - `VITE_API_BASE_URL`: `https://cpcrs-backend.onrender.com`
+   - **Routes / Rewrites**:
+     - `/*` ➔ `/index.html` (Rewrite rule for client-side React Router navigation)
 
 ---
 
