@@ -7,5 +7,5 @@ const items = [
 ]
 
 export default function AdminLayout() {
-  return <div className="app-shell"><Sidebar title="Dialoka CPCRS" subtitle="Admin Workspace" items={items} /><main className="app-main"><Outlet /></main></div>
+  return <div className="app-shell"><Sidebar title="Dailoqua CPCRS" subtitle="Admin Workspace" items={items} /><main className="app-main"><Outlet /></main></div>
 }
